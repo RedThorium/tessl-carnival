@@ -4,7 +4,9 @@ Land your five rings over the bottles scattered on the table.
 
 ## How to play
 
-- 15 bottles stand at random spots on the table. Each round scatters them again.
+- 15 bottles stand at random spots on the table, drawn at an isometric slant so
+  you see their sides and the tops of their caps. Each round scatters them again.
+  A bottle's spot on the table is the middle of its base.
 - The aim line swings left and right. Click once to lock in the direction.
 - A ring marker then moves along the line from the front of the table to the back,
   and loops. Click again to lock in the distance and toss the ring.
@@ -22,5 +24,5 @@ Your final score is saved to the carnival's score board when the game ends.
 ## Files
 
 - `game.ts`: the game logic (`createState`, `placeBottles`, `lockIn`, `step`,
-  `bottleUnder`) and the `ringToss` entry, the default export the midway finds.
+  `bottleUnder`, `backToFront`) and the `ringToss` entry, the default export the midway finds.
 - `game.test.ts`: tests for the game logic.

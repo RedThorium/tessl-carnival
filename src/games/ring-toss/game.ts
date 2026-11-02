@@ -164,6 +164,84 @@ function drawRing(ctx: CanvasRenderingContext2D, point: Point, radius: number) {
   ctx.stroke();
 }
 
+/** Bottles from the back of the table to the front, so nearer bottles are drawn over farther ones. */
+export function backToFront<T extends Point>(items: readonly T[]): T[] {
+  return [...items].sort((a, b) => a.y - b.y);
+}
+
+/** How much shorter a circle on the table looks than it is wide, seen from the tosser. */
+const TILT = 0.5;
+const BOTTLE_BODY = 22;
+const BOTTLE_SHOULDER = 8;
+const BOTTLE_NECK = 10;
+const NECK_RADIUS = BOTTLE_RADIUS * 0.4;
+
+/**
+ * Draws a bottle standing on the table at an isometric slant: an elliptical
+ * base at the bottle's spot, a body, a shoulder that narrows to the neck, and a cap.
+ */
+function drawBottle(ctx: CanvasRenderingContext2D, bottle: Point) {
+  const { colors } = theme;
+  const { x, y } = bottle;
+  const r = BOTTLE_RADIUS;
+  const shoulderY = y - BOTTLE_BODY;
+  const neckY = shoulderY - BOTTLE_SHOULDER;
+  const topY = neckY - BOTTLE_NECK;
+
+  // Shadow on the table.
+  ctx.fillStyle = colors.background;
+  ctx.globalAlpha = 0.5;
+  ctx.beginPath();
+  ctx.ellipse(x + 4, y + 2, r * 1.2, r * TILT * 1.2, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // The glass: the bottom half of the base ellipse, up the sides, in to the neck.
+  ctx.fillStyle = colors.water;
+  ctx.beginPath();
+  ctx.ellipse(x, y, r, r * TILT, 0, 0, Math.PI);
+  ctx.lineTo(x - r, shoulderY);
+  ctx.lineTo(x - NECK_RADIUS, neckY);
+  ctx.lineTo(x - NECK_RADIUS, topY);
+  ctx.lineTo(x + NECK_RADIUS, topY);
+  ctx.lineTo(x + NECK_RADIUS, neckY);
+  ctx.lineTo(x + r, shoulderY);
+  ctx.closePath();
+  ctx.fill();
+
+  // Shade the side away from the light.
+  ctx.fillStyle = colors.surface;
+  ctx.globalAlpha = 0.45;
+  ctx.beginPath();
+  ctx.ellipse(x, y, r, r * TILT, 0, 0, Math.PI / 2);
+  ctx.lineTo(x, shoulderY + BOTTLE_SHOULDER / 2);
+  ctx.lineTo(x + NECK_RADIUS / 2, neckY);
+  ctx.lineTo(x + NECK_RADIUS / 2, topY);
+  ctx.lineTo(x + NECK_RADIUS, topY);
+  ctx.lineTo(x + NECK_RADIUS, neckY);
+  ctx.lineTo(x + r, shoulderY);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // A glint on the lit side.
+  ctx.strokeStyle = colors.text;
+  ctx.globalAlpha = 0.6;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x - r * 0.55, y - 3);
+  ctx.lineTo(x - r * 0.55, shoulderY + 2);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // The cap, with its top seen from above.
+  ctx.fillStyle = colors.wood;
+  ctx.fillRect(x - NECK_RADIUS, topY, NECK_RADIUS * 2, 4);
+  ctx.beginPath();
+  ctx.ellipse(x, topY, NECK_RADIUS, NECK_RADIUS * TILT, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
 function draw(ctx: CanvasRenderingContext2D, state: RingTossState) {
   const { colors } = theme;
 
@@ -185,16 +263,7 @@ function draw(ctx: CanvasRenderingContext2D, state: RingTossState) {
   ctx.closePath();
   ctx.fill();
 
-  for (const bottle of state.bottles) {
-    ctx.fillStyle = colors.water;
-    ctx.beginPath();
-    ctx.arc(bottle.x, bottle.y, BOTTLE_RADIUS, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = colors.wood;
-    ctx.beginPath();
-    ctx.arc(bottle.x, bottle.y, BOTTLE_RADIUS * 0.4, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  for (const bottle of backToFront(state.bottles)) drawBottle(ctx, bottle);
 
   ctx.lineWidth = 4;
   for (const ring of state.rings) {
