@@ -10,14 +10,14 @@ export const MAX_ANGLE = 1;
 export const MIN_DISTANCE = 70;
 export const MAX_DISTANCE = 400;
 /** Seconds for one full swing, left to right and back. */
-export const SWING_PERIOD = 2;
+export const SWING_PERIOD = 3;
 /** Seconds for the distance to go from the front to the back and back again. */
-export const RANGE_PERIOD = 2;
+export const RANGE_PERIOD = 3;
 export const FLIGHT_TIME = 0.6;
 export const BOTTLE_RADIUS = 10;
 export const RING_RADIUS = 18;
-/** A ring scores when it lands this close to the middle of a bottle. */
-export const HIT_DISTANCE = 14;
+/** A ring scores when it lands this close to the middle of a bottle: half the space between bottles. */
+export const HIT_DISTANCE = 22;
 const BOTTLE_SPACING = 44;
 
 export interface Point {

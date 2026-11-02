@@ -108,6 +108,12 @@ describe('ring toss', () => {
     expect(state.phase).toBe('aiming');
   });
 
+  it('scores a ring that lands up to 22 px from the middle of a bottle', () => {
+    const bottles = [{ x: 100, y: 100, ringed: false }];
+    expect(bottleUnder(bottles, { x: 122, y: 100 })).toBe(bottles[0]);
+    expect(bottleUnder(bottles, { x: 123, y: 100 })).toBeUndefined();
+  });
+
   it('scores nothing for a ring that misses every bottle', () => {
     const state = createState();
     state.bottles = [{ x: 100, y: 100, ringed: false }];
