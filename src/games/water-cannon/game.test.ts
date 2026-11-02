@@ -20,6 +20,26 @@ describe('water cannon', () => {
     expect(state.phase).toBe('playing');
   });
 
+  it('has a fourth rail of targets near the cannon that moves left', () => {
+    const rows = [...new Set(createState().targets.map((t) => t.y))];
+    expect(rows).toHaveLength(4);
+    const bottom = createState().targets.filter((t) => t.y === Math.max(...rows));
+    expect(bottom).toHaveLength(3);
+    expect(bottom.every((t) => t.speed < 0)).toBe(true);
+  });
+
+  it('moves the fourth rail left and wraps it round to the right edge', () => {
+    const state = createState();
+    const bottomY = Math.max(...state.targets.map((t) => t.y));
+    const first = state.targets.find((t) => t.y === bottomY)!;
+    const startX = first.x;
+    step(state, 0.1);
+    expect(first.x).toBeLessThan(startX);
+    first.x = -first.radius - 1;
+    step(state, 0);
+    expect(first.x).toBeGreaterThan(CANNON.x);
+  });
+
   it('uses one shot of water per fire', () => {
     const state = createState();
     expect(fire(state, 400, 0)).toBe(true);
