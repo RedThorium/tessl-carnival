@@ -9,6 +9,7 @@ import {
   RING_COUNT,
   SWING_PERIOD,
   TOSSER,
+  backToFront,
   bottleUnder,
   createState,
   landingPoint,
@@ -130,5 +131,15 @@ describe('ring toss', () => {
     expect(state.rings).toHaveLength(RING_COUNT);
     expect(state.phase).toBe('over');
     expect(lockIn(state)).toBe(false);
+  });
+
+  it('draws bottles from the back of the table to the front, leaving the state alone', () => {
+    const state = createState();
+    const order = state.bottles.map((b) => b.y);
+    const drawn = backToFront(state.bottles);
+    expect(drawn).toHaveLength(BOTTLE_COUNT);
+    for (let i = 1; i < drawn.length; i++)
+      expect(drawn[i].y).toBeGreaterThanOrEqual(drawn[i - 1].y);
+    expect(state.bottles.map((b) => b.y)).toEqual(order);
   });
 });
