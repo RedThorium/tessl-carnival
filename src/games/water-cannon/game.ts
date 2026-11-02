@@ -9,6 +9,7 @@ const RAILS = [
   { y: 110, speed: 180, radius: 22 },
   { y: 200, speed: -120, radius: 28 },
   { y: 290, speed: 60, radius: 34 },
+  { y: 370, speed: -150, radius: 24 },
 ];
 const TARGETS_PER_RAIL = 3;
 
